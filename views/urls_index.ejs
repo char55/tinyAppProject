@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <h1><title>TinyApp</title></h1>
+  <% %>
+</head>
+<body>
+    <header>
+      <% include ./partials/_header %>
+    </header>
+
+    <table>
+      <tr>
+        <h1><th>URL index</th></h1>
+      </tr>
+      <tr></tr>
+      <tr>
+        <td>short url</td>
+        <td>long url</td>
+      </tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+      <tr>
+        <% for(let short in data) { %>
+        <tr>
+          <% let long = data[short] %>
+        <td><%=short %></td>
+        <td><a href="X"><%=long %></td></a>
+      </tr>
+        <%} %>
+      </tr>
+      <tr></tr>
+      <tr></tr>
+      <tr></tr>
+    </table>
+
+
+
+    <a href="/urls/new">To shorten URL</a>
+</body>
+</html>
