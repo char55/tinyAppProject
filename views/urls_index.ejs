@@ -25,8 +25,23 @@
         <% for(let short in data) { %>
         <tr>
           <% let long = data[short] %>
-        <td><%=short %></td>
+        <td><a href="/urls/<%=short%>"><%=short %></td></a>
         <td><a href="X"><%=long %></td></a>
+        <td>
+          <form method="POST" action="/urls/<%=short%>/delete">
+              <button type="submit" value="Submit">delete</button>
+          </form>
+        </td>
+        <td>
+            <form method='POST' action='/urls/<%short%>'>
+            <button type="submit" >update</button>
+            </form>
+        <td>
+
+        </td>
+
+        </td>
+      </td>
       </tr>
         <%} %>
       </tr>
