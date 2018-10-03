@@ -3,10 +3,9 @@
 <%if (username) { %>
 <!-- login -->
   <form method="POST" action="/login">
-      <input type="text" name="username">
+      <input type="text" name="user_id ">
       <button type="submit" value="Submit">login</button>
   </form>
-  <%= username %>
 <% } else { %>
 <!-- logout option -->
     <form method="POST" action="/logout">

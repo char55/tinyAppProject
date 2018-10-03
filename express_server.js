@@ -11,6 +11,21 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
+
+
 var urlDatabase = {
   yo : 'www.google.com',
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -40,6 +55,43 @@ app.post("/login", (req, res) => {
   res.cookie('username', req.body['username']);
   res.redirect('/urls');
 });
+
+app.get("/register", (req, res) => {
+  //   let templateVars = {
+  //   username: req.cookies["username"],
+  // };
+// Create a GET /register endpoint,
+// which returns a page that includes a form with an email and password field.
+  res.render("register")
+});
+
+app.post("/register", (req, res) => {
+  const userID = generateRandomString();
+
+// If someone tries to register with an existing user's email
+// If the e-mail or password are empty strings,
+// send back a response with the 400 status code.
+  if(!req.body['email'] || !req.body['password']) {
+    // if either are empty strings
+    res.statusCode = 400;
+    console.log('email/password is required');
+    res.status(400).send('Sorry, email/password is required!');
+  } else if (findUser(req.body['email'])) {
+    // returns true if user email exists in users
+      console.log('email already exists');
+      res.status(400).send('Sorry, email already exists!');
+  } else {
+    users[userID] = {
+      id: userID,
+      email: req.body['email'],
+      password : req.body['password']
+    };
+    res.cookie('user_id', userID);
+    res.redirect('urls');
+  }
+
+});
+
 
 app.post("/logout", (req, res) => {
   res.clearCookie('username');
@@ -108,4 +160,16 @@ function generateRandomString() {
     shorty = shorty + possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return shorty;
+}
+
+function findUser(givenEmail) {
+
+  for(let user in users) {
+    person = users[user];
+    if(person['email'] === givenEmail) {
+      return true;
+    }
+  }
+  return false;
+
 }
