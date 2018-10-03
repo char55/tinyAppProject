@@ -1,6 +1,16 @@
 <h1>URL SHORTENER</h1>
 
-<form method="POST" action="/login">
-    <input type="text" name="username">
-    <button type="submit" value="Submit">login</button>
-</form>
+<%if (username) { %>
+<!-- login -->
+  <form method="POST" action="/login">
+      <input type="text" name="username">
+      <button type="submit" value="Submit">login</button>
+  </form>
+  <%= username %>
+<% } else { %>
+<!-- logout option -->
+    <form method="POST" action="/logout">
+      <button type="submit" value="Submit">logout</button>
+  </form>
+
+<% } %>
