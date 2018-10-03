@@ -12,8 +12,8 @@ app.use(cookieParser())
 
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
+  "jo": {
+    id: "jo",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
@@ -33,7 +33,6 @@ var urlDatabase = {
 };
 
 
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -44,22 +43,52 @@ app.listen(PORT, () => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies['user_id']],
     data: urlDatabase
   };
   res.render("urls_index", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  let templateVars = {
+    user: users,
+  };
+  res.render("login");
+});
+
+
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body['username']);
-  res.redirect('/urls');
+// In order to do this, the endpoint will first need to try and find a user that matches the email submitted via the login form. If a user with that e-mail cannot be found, return a response with a 403 status code.
+
+// If a user with that e-mail address is located, compare the password given in the form with the existing user's password. If it does not match, return a response with a 403 status code.
+
+// If both checks pass, set the user_id cookie with the matching user's random ID, then redirect to /.
+
+  if(findUser(req.body['email'])) {
+    //find if user exists
+    const userID = findUser(req.body['email']);
+
+    if(users[userID]['password'] === req.body['password']) {
+      // password matches
+      res.cookie('user_id', userID);
+      res.redirect('/');
+    } else {
+      // bad password for user
+      console.log('bad password for user');
+      res.status(403).send('The password entered does not match the email entered');
+    }
+
+  } else {
+    // user does not exists
+    console.log('user does not exists');
+    res.status(403).send('The email entered is not registered to any known user');
+  }
+
+
 });
 
 app.get("/register", (req, res) => {
-  //   let templateVars = {
-  //   username: req.cookies["username"],
-  // };
 // Create a GET /register endpoint,
 // which returns a page that includes a form with an email and password field.
   res.render("register")
@@ -94,13 +123,13 @@ app.post("/register", (req, res) => {
 
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
   };
   res.render("urls_new", templateVars);
 });
@@ -118,7 +147,7 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user : users[req.cookies["user_id"]],
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id]
   };
@@ -167,7 +196,7 @@ function findUser(givenEmail) {
   for(let user in users) {
     person = users[user];
     if(person['email'] === givenEmail) {
-      return true;
+      return person['id'];
     }
   }
   return false;

@@ -1,15 +1,19 @@
 <h1>URL SHORTENER</h1>
 
-<%if (username) { %>
-<!-- login -->
-  <form method="POST" action="/login">
-      <input type="text" name="user_id ">
-      <button type="submit" value="Submit">login</button>
-  </form>
-<% } else { %>
+<%if (user) { %>
 <!-- logout option -->
-    <form method="POST" action="/logout">
+  <form method="POST" action="/logout">
       <button type="submit" value="Submit">logout</button>
   </form>
+
+<% } else { %>
+<!-- login -->
+  <h3>You are not logged in!</h3>
+  <a href="/login"><button>LOGIN</button></a>
+  // redirect to login page
+  <br>
+  <h3>Are you registered?</h3>
+  <a href="/register"><button>REGISTER</button></a>
+  // redirect to register page
 
 <% } %>

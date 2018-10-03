@@ -5,15 +5,13 @@
 </head>
 <body>
     <header>
-      <% include ./partials/_header %>
+        <% include ./partials/_header %>
     </header>
+
     <h2>ShortURL: <%= shortURL %></h2>
-
     <form method="POST" action="/urls/<%=shortURL%>">
-      <input type=text name='longURL' value=<%=longURL %>>
-      <button type="submit" value=<%=shortURL%>>update</button>
+        <input type=text name='longURL' value=<%=longURL %>>
+        <button type="submit" value=<%=shortURL%>>update</button>
     </form>
-
-
   </body>
 </html>
