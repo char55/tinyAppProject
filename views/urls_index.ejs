@@ -26,14 +26,14 @@
         <tr>
           <% let long = data[short] %>
         <td><a href="/urls/<%=short%>"><%=short %></td></a>
-        <td><a href="X"><%=long %></td></a>
+        <td><a href="<%=long%>"><%=long %></td></a>
         <td>
           <form method="POST" action="/urls/<%=short%>/delete">
               <button type="submit" value="Submit">delete</button>
           </form>
         </td>
         <td>
-            <form method='POST' action='/urls/<%short%>'>
+            <form method='POST' action='/urls/<%=short%>/update'>
             <button type="submit" >update</button>
             </form>
         <td>
