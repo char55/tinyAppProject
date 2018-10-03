@@ -13,5 +13,13 @@
         <input type=text name='longURL' value=<%=longURL %>>
         <button type="submit" value=<%=shortURL%>>update</button>
     </form>
+    <br>
+    <br>
+    <br>
+    <% if(user) { %>
+     <a href="/urls"><button>return to user's URL list</button></a>
+   <% } else { %>
+     <a href="/login"><button>Would you like to log in?</button></a>
+   <% } %>
   </body>
 </html>
