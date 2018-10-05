@@ -172,6 +172,15 @@ app.post("/login", (req, res) => {
       // password matches
       // login!
       req.session.user_id = userID;
+
+      if(req.session['visit'] !== null) {
+      // if no visitor cookie - figure it out
+        if (users[req.session['user_id']]['visitorPass'] !== req.session['visit']) {
+          // if this is a different user on the same computer - reassign
+          req.session.visit = users[req.session['id']];
+        }
+      }
+
       res.redirect('/');
     } else {
       // bad password for user
@@ -297,7 +306,7 @@ app.get("/urls/:id", (req, res) => {
         date: urlDatabase[req.params.id]['date']
       };
 
-      if(req.session['visit'] == null) {
+      if(req.session['visit'] === null) {
         // if no visitor cookie exists - assign one
         req.session.visit = userVisit(req.params.id, req.session['user_id']);
       }
@@ -335,7 +344,7 @@ app.get("/u/:shortURL", (req, res) => {
     let longURL = urlDatabase[req.params.shortURL]['long'];
 
     urlDatabase[req.params.shortURL]['countURL']++;
-    if(req.session['visit'] == null) {
+    if(req.session['visit'] === null) {
       // if no visitor cookie - figure it out
       req.session.visit = userVisit(req.params.shortURL, req.session['user_id']);
       urlDatabase[req.params.shortURL]['countUnique'] = 1;
