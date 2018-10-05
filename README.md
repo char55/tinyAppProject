@@ -4,7 +4,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["screendescriot](#)
+![Login Page](https://github.com/char55/tinyAppProject/blob/master/docs/Login_Page.png?raw=true)
+![Index of URLs shortened by specified user](https://github.com/char55/tinyAppProject/blob/master/docs/User's_URL_index.png?raw=true)
+![Each shortened URL can be updated](https://github.com/char55/tinyAppProject/blob/master/docs/Updating_URL.png?raw=true)
 
 ## Dependencies
 
