@@ -31,6 +31,7 @@ const users = {
     email: "user2@example.com",
     password: bcrypt.hashSync("dishwasher-funk", 10),
     visitorPass: generateRandomString()
+    // logged in user get identifier to track which shortURL they visit - those not logged in are tracked via cookies
   }
 
 };
@@ -41,9 +42,9 @@ const urlDatabase = {
       short: 'yoo8Pm',
       long: "https://github.com/",
       date : "March 3 1998",
-      countURL : 0,
-      visitorTracker : [],
-      countUnique : 0
+      countURL : 0,           // counts the number of times the short URL "/u/:id" has been clicked in total
+      visitorTracker : [],    // tracks who has visited the URL short
+      countUnique : 0         // counts the number of times the short URL "/u/:id" has been clicked by a single user
     },
     'b2xVn2' : {
       id: 'user2RandomID',
@@ -200,9 +201,6 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
 
-// If someone tries to register with an existing user's email
-// If the e-mail or password are empty strings,
-// send back a response with the 400 status code.
   if(!req.body['email'] || !req.body['password']) {
     // if either are empty strings
     res.statusCode = 400;
@@ -298,15 +296,12 @@ app.get("/urls/:id", (req, res) => {
         longURL: urlDatabase[req.params.id]['long'],
         date: urlDatabase[req.params.id]['date']
       };
-      urlDatabase[req.params.id]['countURL']++;
 
       if(req.session['visit'] == null) {
-        // if no visitor cookie - figure it out
+        // if no visitor cookie exists - assign one
         req.session.visit = userVisit(req.params.id, req.session['user_id']);
-        urlDatabase[req.params.id]['countUnique'] = 1;
-      } else {
-       checkVisit(req.params.id, req.session['visit'])
       }
+
       res.render("urls_show", templateVars);
   }
 });
@@ -335,8 +330,19 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+  // link to shortURL
   if(urlDatabase[req.params.shortURL]) {
     let longURL = urlDatabase[req.params.shortURL]['long'];
+
+    urlDatabase[req.params.shortURL]['countURL']++;
+    if(req.session['visit'] == null) {
+      // if no visitor cookie - figure it out
+      req.session.visit = userVisit(req.params.shortURL, req.session['user_id']);
+      urlDatabase[req.params.shortURL]['countUnique'] = 1;
+    } else {
+     checkVisit(req.params.shortURL, req.session['visit'])
+    }
+
     res.redirect(longURL);
   } else {
     res.status(403).send('this short URL does not exist!')

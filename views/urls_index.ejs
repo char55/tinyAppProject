@@ -45,6 +45,16 @@
           <button type="submit" class="btn btn-success" >update</button>
         </form>
       </td>
+      <td>
+        <h5> shortURL link: </h5>
+          <a href="http://localhost:8080/u/<%=short%>">http://localhost:8080/u/<%=short%></a>
+      </td>
+        <!--       countURL and countUnique will only update once page refreshes
+              ie: you can't click on shortURL go back and see the adjusted count
+               you need to reload page so the adjusted count can be shown
+              for the site's application this shouldn't be a problem tho
+              since users are checking if OTHER people are clicking it
+              so they'd be loading the page anew -->
     </tr>
       <% } %>
   </tbody>
