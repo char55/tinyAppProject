@@ -18,7 +18,7 @@
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-        <form method="POST" action="/urls/<%=shortURL%>" class="form-inline">
+        <form method="POST" action="/urls/<%=shortURL%>?_method=PUT" class="form-inline">
         <div class="form-group mb-2">
             <input type="text" readonly class="form-control-plaintext" value="<%=shortURL%>"">
         </div>
@@ -36,6 +36,8 @@
       <div>
       shortURL created: <%= date %>
       </div>
+
+
       <div>
         <% if(user) { %>
              <a href="/urls" class=".btn-primary"><button>return to user's URL list</button></a>

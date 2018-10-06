@@ -1,7 +1,8 @@
 var express = require("express");
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
-const bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt');
+var methodOverride = require('method-override')
 var app = express();
 var PORT = 8080; // default port 8080
 
@@ -17,7 +18,7 @@ app.use(cookieSession({
   keys: ['choco', 'vanilla', 'rainbow', 'doubletrouble' ],
 }));
 
-
+app.use(methodOverride('_method'))
 
 const users = {
   "jo": {
@@ -240,6 +241,8 @@ app.post("/logout", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
+  console.log('========')
+  console.log(urlDatabase)
   if (users[req.session["user_id"]]) {
     const objUser = urlsForUser(req.session['user_id']);
     let templateVars = {
@@ -316,14 +319,14 @@ app.get("/urls/:id", (req, res) => {
 });
 
 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   urlDatabase[req.params.id]['long'] = req.body['longURL'];
   // update/changes longURL for specified shorty
   res.redirect('/urls');
 });
 
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id]
   res.redirect('/urls');
 });
@@ -338,18 +341,19 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/u/:shortURL", (req, res) => {
+app.get("/u/:id", (req, res) => {
   // link to shortURL
-  if(urlDatabase[req.params.shortURL]) {
-    let longURL = urlDatabase[req.params.shortURL]['long'];
+  console.log("params: ",req.params)
+  if(urlDatabase[req.params.id]) {
+    let longURL = urlDatabase[req.params.id]['long'];
 
-    urlDatabase[req.params.shortURL]['countURL']++;
+    urlDatabase[req.params.id]['countURL']++;
     if(req.session['visit'] === null) {
       // if no visitor cookie - figure it out
-      req.session.visit = userVisit(req.params.shortURL, req.session['user_id']);
-      urlDatabase[req.params.shortURL]['countUnique'] = 1;
+      req.session.visit = userVisit(req.params.id, req.session['user_id']);
+      urlDatabase[req.params.id]['countUnique'] = 1;
     } else {
-     checkVisit(req.params.shortURL, req.session['visit'])
+     checkVisit(req.params.id, req.session['visit'])
     }
 
     res.redirect(longURL);
@@ -357,3 +361,26 @@ app.get("/u/:shortURL", (req, res) => {
     res.status(403).send('this short URL does not exist!')
   }
 });
+
+
+function urlEqualizer(url) {
+  let urlAdjusted = ""
+  if(url.indexOf("www.") >0) {
+    let start = url.indexOf("www.") + 4;
+    url.substring(start, end);
+  }
+
+  if(url.indexOf("https://www.") > 0) {
+    let start = url.indexOf("www.") + 4;
+    url.substring(start, end);
+  }
+
+  if(url.indexOf("http:/www.") > 0) {
+    let start = url.indexOf("www.") + 4;
+    url.substring(start, end);
+  }
+
+
+
+  return urlAdjusted
+}
