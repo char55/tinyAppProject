@@ -139,17 +139,16 @@ function userVisit(shortID, userID) {
 
 
 function checkVisit(shortID, visitor) {
-  let allVisitors = urlDatabase[shortID]['visitorTracker'];
-  let found = allVisitors.findIndex(person => person === visitor);
+  const allVisitors = urlDatabase[shortID]['visitorTracker'];
+  const found = allVisitors.findIndex(person => person === visitor);
   if (found < 0) {
   // if not - add a count
     urlDatabase[shortID]['visitorTracker'].push(visitor);
     urlDatabase[shortID]['countUnique']++
-    return;
   } else {
   // if yes return
-    return;
   }
+  return;
 }
 
 /////////////////////////////////////////// coding for web pages
@@ -163,17 +162,13 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-
-
   if(findUser(req.body['email'])) {
     //find if user exists
     const userID = findUser(req.body['email']);
-
     if( bcrypt.compareSync(req.body['password'], users[userID]['password']) ) {
       // password matches
       // login!
       req.session.user_id = userID;
-
       if(req.session['visit'] !== null) {
       // if no visitor cookie - figure it out
         if (users[req.session['user_id']]['visitorPass'] !== req.session['visit']) {
@@ -181,18 +176,13 @@ app.post("/login", (req, res) => {
           req.session.visit = users[req.session['id']];
         }
       }
-
       res.redirect('/');
     } else {
       // bad password for user
-      console.log(bcrypt.compareSync(req.body['password'], users[userID]['password']) )
-      console.log('bad password for user');
       res.status(403).send('The password entered does not match the email entered');
     }
-
   } else {
     // user does not exists
-    console.log('user does not exists');
     res.status(403).send('The email entered is not registered to any known user');
   }
 });
@@ -214,11 +204,9 @@ app.post("/register", (req, res) => {
   if(!req.body['email'] || !req.body['password']) {
     // if either are empty strings
     res.statusCode = 400;
-    console.log('email/password is required');
     res.status(400).send('Sorry, email/password is required!');
   } else if (findUser(req.body['email'])) {
     // returns true if user email exists in users
-      console.log('email already exists');
       res.status(400).send('Sorry, email already exists!');
   } else {
     users[userID] = {
@@ -241,11 +229,9 @@ app.post("/logout", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
-  console.log('========')
-  console.log(urlDatabase)
   if (users[req.session["user_id"]]) {
     const objUser = urlsForUser(req.session['user_id']);
-    let templateVars = {
+    const templateVars = {
       user: users[req.session['user_id']],
       data: objUser,
       dateBank: urlDatabase
@@ -258,11 +244,11 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   if(req.session['user_id']) {
-    let shorty = generateRandomString();
+    const shortURL = generateRandomString();
     // id is short URL
-    urlDatabase[shorty] = {
+    urlDatabase[shortURL] = {
       id: req.session["user_id"],
-      short: shorty,
+      short: shortURL,
       long: req.body['longURL'],
       date: Date(),
       countURL : 0,
@@ -270,7 +256,7 @@ app.post("/urls", (req, res) => {
       countUnique : 0
     };
     //req.body returns object with longURL as key for url submitted
-    res.redirect('/urls/'+shorty)
+    res.redirect('/urls/'+shortURL)
     // redirects to the page specific to the longURL given
   } else {
     res.status(403).send('You are not logged in.  You must log in to use this fantastic service.')
@@ -283,7 +269,7 @@ app.get("/urls/new", (req, res) => {
    // not logged in
    res.redirect('/login')
   } else {
-    let templateVars = {
+    const templateVars = {
       user: users[req.session["user_id"]],
     };
     res.render("urls_new", templateVars);
@@ -295,14 +281,13 @@ app.get("/urls/:id", (req, res) => {
   if (!users[req.session["user_id"]]) {
     // not logged in
     res.status(403).send('You are not logged in');
-    console.log('You aren\'t logged in!')
   } else if (!urlDatabase[req.params.id]) {
       res.status(403).send('url short not found.  typo maybe? try again.')
   } else if (users[req.session["user_id"]]['id'] !== urlDatabase[req.params.id]['id']) {
       // if the user id - as set by cookie dep on who is logged in - doesn't match url's user id
       res.status(403).send('You are not the proper user for this shortURL');
   } else {
-      let templateVars = {
+      const templateVars = {
         user : users[req.session["user_id"]],
         shortURL: req.params.id,
         longURL: urlDatabase[req.params.id]['long'],
@@ -343,9 +328,8 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   // link to shortURL
-  console.log("params: ",req.params)
   if(urlDatabase[req.params.id]) {
-    let longURL = urlDatabase[req.params.id]['long'];
+    const longURL = urlDatabase[req.params.id]['long'];
 
     urlDatabase[req.params.id]['countURL']++;
     if(req.session['visit'] === null) {
@@ -355,32 +339,20 @@ app.get("/u/:id", (req, res) => {
     } else {
      checkVisit(req.params.id, req.session['visit'])
     }
+    if(longURL.indexOf("http") !== -1) {
+      // outside domain is specified
+      res.redirect(longURL);
+    } else {
+      if(longURL.indexOf("www.") !== -1) {
+        /// there is a www.
+        res.redirect('http://'+longURL);
+      } else {
+        res.redirect('http://www.'+longURL);
+      }
+    }
 
-    res.redirect(longURL);
   } else {
     res.status(403).send('this short URL does not exist!')
   }
 });
 
-
-function urlEqualizer(url) {
-  let urlAdjusted = ""
-  if(url.indexOf("www.") >0) {
-    let start = url.indexOf("www.") + 4;
-    url.substring(start, end);
-  }
-
-  if(url.indexOf("https://www.") > 0) {
-    let start = url.indexOf("www.") + 4;
-    url.substring(start, end);
-  }
-
-  if(url.indexOf("http:/www.") > 0) {
-    let start = url.indexOf("www.") + 4;
-    url.substring(start, end);
-  }
-
-
-
-  return urlAdjusted
-}
